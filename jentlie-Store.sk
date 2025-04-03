@@ -1,0 +1,67 @@
+options:
+    prefix: &8[&f&lYOUR PREFIX&8]: &f  
+    lore: &8│&f
+    lore2: &8➜&f
+
+command store:
+    trigger:
+        store(player, "main")
+
+function store(p: player, page: text):
+    create a gui with virtual chest inventory with 5 rows named "&8Store                                    &fWritten by: <##FF5353>ᴊ<##FFB469>ᴇ<##FFFF5F>ɴ<##63FF63>ᴛ<##6969FF>ʟ<##C270FF>ɪ<##DB88FF>ᴇ&8":
+        make gui slot dynamicBorder(5) with gray stained glass pane named "&7"
+        make gui slot 2 with gold block named "&aCredits" with lore "&8Currency", "", "&8[Click] to enter.":
+            store({_p}, "credits")
+        make gui slot 3 with leather chestplate with nbt from "{""minecraft:attribute_modifiers"":{modifiers:[],show_in_tooltip:0}}" named "&6Ranks" with lore "&8In-game titles", "", "&8[Click] to enter.":
+            store({_p}, "ranks")
+        make gui slot 4 with bamboo named "&aSellwands" with lore "&8Sell Utility", "", "&8[Click] to enter.":
+            store({_p}, "sellwands")
+        make gui slot 5 with ender chest named "<##FF5353>&lL<##FFB469>&lO<##FFDA64>&lO<##FFFF5F>&lT<##63FF63>&lB<##6969FF>&lO<##966DFF>&lX<##C270FF>&lE<##DB88FF>&lS" with lore "&8Server Speciality", "", "&8[Click] to enter.":
+            store({_p}, "lootboxes")
+        set {_helmet} to leather helmet with nbt from "{""minecraft:attribute_modifiers"":{modifiers:[],show_in_tooltip:0}}"
+        dye {_helmet} (255, 255, 0)
+        make gui slot 6 with {_helmet} named "&bGamepasses" with lore "&8Perks", "", "&8[Click] to enter.":
+            store({_p}, "gamepasses")
+
+        if {_page} = "credits":
+            make gui slot 20,21,22,23,24 with gold nugget named "&aCredit Amount"
+            make gui slot 40 with barrier named "&cReturn":
+                store({_p}, "main")
+        
+
+        if {_page} = "ranks":
+            set {_i} to leather chestplate with nbt from "{""minecraft:attribute_modifiers"":{modifiers:[],show_in_tooltip:0}}"
+            
+            make gui slot 20 with {_i} named "&6Rank"
+            
+            dye {_i} (255, 165, 0)
+            make gui slot 21 with {_i} named "&6Rank"
+
+            dye {_i} (255, 255, 0)
+            make gui slot 22 with {_i} named "&6Rank"
+
+            dye {_i} (0, 255, 0)
+            make gui slot 23 with {_i} named "&6Rank"
+
+            dye {_i} (0, 0, 255)
+            make gui slot 24 with {_i} named "&6Rank"
+
+            make gui slot 40 with barrier named "&cReturn":
+                store({_p}, "main")
+
+        if {_page} = "sellwands":
+            make gui slot 21,22,23 with bamboo named "&aSellwand &7[ɪɴꜰɪɴɪᴛᴇ]"
+            make gui slot 40 with barrier named "&cReturn":
+                store({_p}, "main")
+
+        if {_page} = "lootboxes":
+            make gui slot 20,21,22,23,24 with ender chest named "&5Lootbox"
+            make gui slot 40 with barrier named "&cReturn":
+                store({_p}, "main")  
+
+        if {_page} = "gamepasses":
+            make gui slot 21,22,23 with customSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNjMjVhN2ExODgxOTZiMTg3MTcyNjRmZmU4MzdjYTM0OGNmNzE5ZTgyNzE3OWVkYzRiNzhjYmNiOGM3ZGQ4In19fQ==") named "&b[ᴛʏᴘᴇ] Gamepass" 
+            make gui slot 40 with barrier named "&cReturn":
+                store({_p}, "main")  
+
+    open the last gui for {_p}

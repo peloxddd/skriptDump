@@ -1,0 +1,91 @@
+### THESE ARE NOT MINE
+### THESE ARE PUBLIC.
+
+function bN(item: itemtype) :: string:
+    set {_i} to minecraft name of {_item}
+    replace "minecraft:" in {_i} with ""
+    replace "[" in {_i} with ""
+    replace "]" in {_i} with ""
+    replace "_" in {_i} with " "
+    return fancy({_i}) 
+
+function fancy(text: text) :: text:
+    set {_tiny::*} to "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ¹²³⁴⁵⁶⁷⁸⁹⁰" split at ""
+    set {_norm::*} to "abcdefghijklmnopqrstuvwxyz1234567890" split at ""
+    loop {_tiny::*}:
+        replace {_norm::%loop-index%} with loop-value in {_text}
+        replace "&%loop-value%" with "&%{_norm::%loop-index%}%" in {_text}
+    return colored {_text}
+
+function dynamicBorder(gui_size: number) :: integers:
+    set {_list::*} to all integers between 0 and 8
+    add all integers between ({_gui_size} * 9 - 9) and ({_gui_size} * 9 - 1) to {_list::*}
+    loop all integers between 0 and ({_gui_size} - 1):
+        add (loop-value * 9) to {_list::*}
+        add (loop-value * 9 + 8) to {_list::*}
+    return {_list::*}
+
+function customSkull(id: string) :: item:
+    if length of {_id} > 16:
+        set {_n} to nbt from "{""minecraft:profile"":{properties:[{name:""textures"",value:""%{_id}%""}]}}"
+        return player head with nbt {_n}
+    return skull of ({_id} parsed as offlineplayer)
+
+options:
+	strength: 0
+
+on load:
+	set {-tick} to 1
+	set {-strength} to {-strength} ? {@strength}
+
+function rainbow(text:string={_null}, tick:number={-tick}) :: text component:
+	set {_text} to {_text} ? "ERROR"
+	set {_text} to mini message from "<gradient:%createMassRainbow()%:%{_tick}%>%{_text}%"
+	return {_text}
+
+function createMassRainbow(strength:number={-strength}) :: string:
+	set {_strength} to 255 - (min(255,max({_strength},0)) ? 0)
+
+	set {_hex::1} to RGBToHex(255, {_strength}, {_strength})
+	set {_hex::2} to RGBToHex(255, 255, {_strength})
+	set {_hex::3} to RGBToHex({_strength}, 255, {_strength})
+	set {_hex::4} to RGBToHex({_strength}, 255, 255)
+	set {_hex::5} to RGBToHex({_strength}, {_strength}, 255)
+	set {_hex::6} to RGBToHex(255, {_strength}, 255)
+	set {_hex::7} to RGBToHex(255, {_strength}, {_strength})
+	return join {_hex::*} with ":"
+
+on load:
+    loop (integers from 0 to 9), "A", "B", "C", "D", "E" and "F":
+        set {-rgbFormating::number_to_hex::%(loop-counter)-1%} to "%loop-value%"
+        set {-rgbFormatting::hex_to_rgb::place1::%loop-value%} to 16 * (loop-counter - 1)
+        set {-rgbFormatting::hex_to_rgb::place2::%loop-value%} to loop-counter - 1
+
+function HexToRGB(string:string) :: color:
+    replace "<", ">" and "#" in {_string} with ""
+    loop "red", "green", "blue":
+        loop 2 times:
+            add 1 to {_spot}
+            set {_char} to (character at {_spot} in {_string}) ? "{}{}{}{}"
+            add {-rgbFormatting::hex_to_rgb::place%loop-value-2%::%{_char}%} to {_%loop-value-1%}
+    return rgb({_red}, {_green}, {_blue})
+
+function RGBToHex(red:integer, green:integer, blue:integer, asSkript:boolean=false) :: string:
+    set {_rgb::1} to min(255, max(0, {_red}))
+    set {_rgb::2} to min(255, max(0, {_green}))
+    set {_rgb::3} to min(255, max(0, {_blue}))
+    loop 3 times:
+        set {_first} to {-rgbFormating::number_to_hex::%floor({_rgb::%loop-value%} / 16)%}
+        set {_second} to {-rgbFormating::number_to_hex::%mod({_rgb::%loop-value%}, 16)%}
+        set {_rgb::%loop-value%} to join {_first} and {_second}
+    if {_asSkript} is true:
+        # Dumb skript design, can't return coloured without making it hard to debug
+        return "<#%{_rgb::1}%%{_rgb::2}%%{_rgb::3}%>"
+    return "#%{_rgb::1}%%{_rgb::2}%%{_rgb::3}%"
+
+function ColorToHex(color:color, asSkript:boolean=false) :: string:
+    set {_color} to {_color}.asBukkitColor()
+    set {_red} to {_color}.getRed()
+    set {_green} to {_color}.getGreen()
+    set {_blue} to {_color}.getBlue()
+    return RGBToHex({_red}, {_green}, {_blue}, {_asSkript})
