@@ -1,0 +1,38 @@
+options: 
+    line: &8 │&f
+
+    homelimit: 3
+
+on load:
+    delete {homelimit}
+    set {homelimit} to {@homelimit}
+
+command sethome <text>:
+    trigger:
+        if {home::%player's uuid%::*} is less than {homelimit}:
+            set player's location to {home::%player's uuid%::%arg-1%}
+            send "{@line} ʏᴏᴜ ѕᴇᴛ <##FFFF00>%arg-1%&f ᴛᴏ ᴛʜɪѕ ʟᴏᴄᴀᴛɪᴏɴ" to player
+        else:
+            send "{@line} ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴇᴛ ᴍᴏʀᴇ ᴛʜᴀɴ %{homelimit}% ʜᴏᴍᴇѕ" to player
+
+command delhome <text>:
+    trigger:
+        if {home::%player's uuid%::*} contains {home::%player's uuid%::%arg-1%}:
+            delete {home::%player's uuid%::%arg-1%} from {home::%player's uuid%::*}
+            send "{@line} ʏᴏᴜ ᴅᴇʟᴇᴛᴇᴅ ʏᴏᴜʀ ʜᴏᴍᴇ <##FFFF00>%arg-1%" to player
+        else:
+            send "{@line} ʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʜᴏᴍᴇ ɴᴀᴍᴇᴅ <##FFFF00>%arg-1%" to player
+
+command homes [<player>]:
+    permission: admin.homes
+    trigger:
+        if arg-1 is set:
+            send {home::%player's uuid%::*} to player
+        else:
+            send {home::%arg-1's uuid%::*} to player
+
+command myhomes:
+    trigger:
+        send {home::%player's uuid%::*} to player
+
+

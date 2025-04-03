@@ -1,0 +1,35 @@
+options:
+    prefix: &8[&f&lYOUR PREFIX&8]: &f  
+    lore: &8│&f
+    lore2: &8➜&f
+
+on load:
+    delete {gens::registry::*}
+
+function regGen(id: int, block: itemtype, drop: itemtype, gen-name: text, drop-name: text, sell: num, upgrade: num, buy: num):
+    set {gens::registry::%{_id}%} to {_id}
+    set {gens::registry::%{_id}%::block} to {_block}
+    set {gens::registry::%{_id}%::drop} to {_drop}
+    set {gens::registry::%{_id}%::gen-name} to {_gen-name}
+    set {gens::registry::%{_id}%::drop-name} to {_drop-name}
+    set {gens::registry::%{_id}%::sell} to {_sell}
+    set {gens::registry::%{_id}%::upgrade} to {_upgrade}
+    set {gens::registry::%{_id}%::buy} to {_buy}
+
+function genList(p: player, page: int):
+    set {_page} to 1
+    set {_end} to {_page} * 27
+    set {_start} to {_end} - 27
+
+    create a gui with virtual chest with 4 rows named "Example":
+        loop {gens::registry::*}:
+            add 1 to {_pos}
+            if {_pos} is between {_start} and {_end}:
+                make next gui slot with {gens::registry::%loop-value%::block} named "%{gens::registry::%loop-value%::name}%"
+        make gui slot 27 with paper named "<< Back":
+            set {_back} to {_page} - 1
+            if {_page} > 0:
+                genList(player, ({_page}-1))
+        make gui slot 35 with paper named "Next >>":
+            genList(player, ({_page}+1))
+    open the last gui for {_p}
